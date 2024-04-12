@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:either_dart/either.dart';
 import 'package:pothole_detection/modules/user_panel/data/model/get_pot_hole_by_uid_request_model.dart';
@@ -37,7 +38,7 @@ class RegisterUserUseCase
   }
 }
 
-class UploadImageUserUseCase implements UseCaseOneInput<Uint8List?, dynamic> {
+class UploadImageUserUseCase implements UseCaseOneInput<File?, dynamic> {
   @override
   Future<Either<Failure, dynamic>> invoke(body) async {
     return await serviceLocator.get<UploadImgUserRepo>().uploadImg(body: body);

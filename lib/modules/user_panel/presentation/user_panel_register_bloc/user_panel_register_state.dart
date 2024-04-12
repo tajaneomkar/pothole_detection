@@ -1,11 +1,6 @@
 part of 'user_panel_register_bloc.dart';
 
-sealed class UserPanelRegisterState extends Equatable {
-  const UserPanelRegisterState();
-
-  @override
-  List<Object> get props => [];
-}
+class UserPanelRegisterState {}
 
 final class UserPanelRegisterInitial extends UserPanelRegisterState {}
 
@@ -15,10 +10,12 @@ final class UserPanelRegisterLoaded extends UserPanelRegisterState {}
 
 final class UserPanelRegisterError extends UserPanelRegisterState {
   final String errorMessage;
-  const UserPanelRegisterError({required this.errorMessage});
+  UserPanelRegisterError({required this.errorMessage});
 }
 
 final class UploadImageUserPanelLoading extends UserPanelRegisterState {}
+
+final class NavigateToLoginPageEvent extends UserPanelRegisterState {}
 
 final class UploadImageUserPanelSuccess extends UserPanelRegisterState {}
 

@@ -3,6 +3,7 @@ import 'package:pothole_detection/modules/user_panel/data/model/user_panel_reque
 import 'package:pothole_detection/modules/user_panel/data/model/user_panel_response_model.dart';
 import 'package:pothole_detection/modules/user_panel/domain/usecases/user_panel_usecases.dart';
 import 'package:pothole_detection/services/service_locator.dart';
+import 'package:pothole_detection/utils/network/custom_exception.dart';
 part 'user_panel_event.dart';
 part 'user_panel_state.dart';
 
@@ -39,11 +40,20 @@ class UserPanelBloc extends Bloc<UserPanelEvent, UserPanelState> {
                 emit(UserPanelErrorState(errorMessage: "No Data Available!"));
               }
             } catch (e) {
-              emit(UserPanelErrorState(errorMessage: 'An error occurred: $e'));
+              if (e is UnauthorizedException) {
+                emit(NavigateToLoginPageEvent());
+              } else {
+                emit(
+                    UserPanelErrorState(errorMessage: 'An error occurred: $e'));
+              }
             }
           }
         } catch (e) {
-          emit(UserPanelErrorState(errorMessage: 'An error occurred: $e'));
+          if (e is UnauthorizedException) {
+            emit(NavigateToLoginPageEvent());
+          } else {
+            emit(UserPanelErrorState(errorMessage: 'An error occurred: $e'));
+          }
         }
       },
     );

@@ -6,6 +6,8 @@ final class UserPanelInitialState extends UserPanelState {}
 
 class UserPanelLoadingState extends UserPanelState {}
 
+class NavigateToLoginPageEvent extends UserPanelState {}
+
 class UserPanelLoadedState extends UserPanelState {
   final List<UserPanelResponseModel> userPanelResponse;
 

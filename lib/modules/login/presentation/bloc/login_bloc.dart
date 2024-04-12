@@ -44,6 +44,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         // await saveLoginData(accessToken, userData);
         serviceLocator<SharedPreferencesService>().authToken = accessToken;
         serviceLocator<SharedPreferencesService>().userID = userData["id"];
+        serviceLocator<SharedPreferencesService>().userRole = userData["role"];
 
         final LoginResponseModel loginResponse =
             LoginResponseModel.fromJson(responseData);
@@ -72,19 +73,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<void> checkSavedLoginData(Emitter<LoginState> emit) async {
     final accessToken = serviceLocator<SharedPreferencesService>().authToken;
     final userId = serviceLocator<SharedPreferencesService>().userID;
+    final userRole = serviceLocator<SharedPreferencesService>().userRole;
 
-    print(accessToken);
-    print(userId);
-    if (accessToken != "" && userId != "") {
+    if (accessToken != "" && userId != "" && userRole != "") {
       // If access token and user data exist, emit LoginSuccessState
       // final userData = json.decode(userDataString);
       final loginResponse = LoginResponseModel(
         accessToken: accessToken,
-        userData: UserData(
-          email: "",
-          id: userId,
-          username: "",
-        ),
+        userData: UserData(email: "", id: userId, username: "", role: userRole),
       );
       // serviceLocator<SharedPreferencesService>().authToken = accessToken;
       emit(LoginSuccessState(response: loginResponse));

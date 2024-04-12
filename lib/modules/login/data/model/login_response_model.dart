@@ -27,18 +27,21 @@ class UserData {
   final String? email;
   final String? username;
   final String? id;
+  final String? role;
 
   UserData({
     this.email,
     this.username,
     this.id,
+    this.role,
   });
 
   UserData.fromJson(Map<String, dynamic> json)
       : email = json['email'] as String?,
         username = json['username'] as String?,
-        id = json['id'] as String?;
+        id = json['id'] as String?,
+        role = json['role'] as String?;
 
   Map<String, dynamic> toJson() =>
-      {'email': email, 'username': username, 'id': id};
+      {'email': email, 'username': username, 'id': id, 'role': role};
 }

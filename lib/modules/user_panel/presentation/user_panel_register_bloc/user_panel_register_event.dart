@@ -10,7 +10,7 @@ sealed class UserPanelRegisterEvent extends Equatable {
 class UserPanelRegisterInitialEvent extends UserPanelRegisterEvent {}
 
 class UploadImageUserPanelInitialEvent extends UserPanelRegisterEvent {
-  final Uint8List? bytes;
+  final File? file;
 
-  const UploadImageUserPanelInitialEvent(this.bytes);
+  const UploadImageUserPanelInitialEvent(this.file);
 }

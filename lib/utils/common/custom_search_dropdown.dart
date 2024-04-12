@@ -8,6 +8,7 @@ class CustomSearchDropdown extends StatelessWidget {
   final String? selectedValue;
   final void Function(String?)? onChanged;
   final void Function(String?)? onSaved;
+  final String? initialValue;
 
   final bool? isEnable;
   final bool showSearchBox;
@@ -23,6 +24,7 @@ class CustomSearchDropdown extends StatelessWidget {
     this.height,
     this.validator,
     this.isEnable,
+    this.initialValue,
     required this.showSearchBox,
   }) : super(key: key);
 
@@ -30,7 +32,7 @@ class CustomSearchDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownSearch<String>(
       enabled: isEnable ?? true,
-      selectedItem: selectedValue,
+      selectedItem: selectedValue ?? initialValue,
       onChanged: onChanged,
       popupProps: PopupProps.dialog(
           dialogProps: const DialogProps(

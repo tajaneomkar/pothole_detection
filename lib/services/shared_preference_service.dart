@@ -9,6 +9,7 @@ class SharedPreferencesService {
 
   static const String AUTH_TOKEN = 'authToken';
   static const String USER_ID = 'userID';
+  static const String USER_ROLE = 'role';
 
   void _saveToDisk<T>(String key, T content) {
     if (content is String) {
@@ -44,4 +45,7 @@ class SharedPreferencesService {
 
   String get userID => _getFromDisk(USER_ID) ?? "";
   set userID(String value) => _saveToDisk(USER_ID, value);
+
+  String get userRole => _getFromDisk(USER_ROLE) ?? "";
+  set userRole(String value) => _saveToDisk(USER_ROLE, value);
 }

@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_register_bloc/user_panel_register_bloc.dart';
@@ -21,7 +20,7 @@ class _FilePickerButtonState extends State<FilePickerButton> {
         showOptionsDialog(context);
       },
       child: Container(
-        width: double.maxFinite,
+        width: double.infinity,
         padding: const EdgeInsets.only(top: 50, bottom: 50),
         decoration: BoxDecoration(
             border: Border.all(width: 1, color: Colors.grey),
@@ -32,11 +31,11 @@ class _FilePickerButtonState extends State<FilePickerButton> {
                   listen: true,
                 ).imageBytes !=
                 null
-            ? Image.memory(BlocProvider.of<UserPanelRegisterBloc>(
+            ? Image.file(BlocProvider.of<UserPanelRegisterBloc>(
                   context,
                   listen: true,
                 ).imageBytes ??
-                Uint8List(0))
+                File(""))
             : Column(
                 children: [
                   Icon(Icons.file_copy, size: 70, color: Colors.grey.shade300),
@@ -132,9 +131,8 @@ class _FilePickerButtonState extends State<FilePickerButton> {
       final pickedFile = await ImagePicker().pickImage(source: source);
 
       if (pickedFile != null) {
-        BlocProvider.of<UserPanelRegisterBloc>(context).add(
-            UploadImageUserPanelInitialEvent(
-                File(pickedFile.path).readAsBytesSync()));
+        BlocProvider.of<UserPanelRegisterBloc>(context)
+            .add(UploadImageUserPanelInitialEvent(File(pickedFile.path)));
       } else {
         print('User canceled operation');
       }

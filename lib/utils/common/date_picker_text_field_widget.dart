@@ -6,12 +6,14 @@ class DatePickerFormField extends StatefulWidget {
   final String label;
   final String hint;
   final TextEditingController controller;
+  final FormFieldValidator<String>? validator;
 
   const DatePickerFormField({
     Key? key,
     required this.label,
     required this.hint,
     required this.controller,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -22,12 +24,6 @@ class DatePickerFormFieldState extends State<DatePickerFormField> {
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    widget.controller.dispose();
-    super.dispose();
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -65,6 +61,7 @@ class DatePickerFormFieldState extends State<DatePickerFormField> {
       child: Material(
         color: Colors.transparent,
         child: TextFormField(
+          validator: widget.validator,
           readOnly: true,
           controller: widget.controller,
           onTap: () => _selectDate(context),

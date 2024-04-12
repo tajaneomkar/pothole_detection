@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -8,6 +9,7 @@ import 'package:pothole_detection/modules/user_panel/data/model/upload_img_user_
 import 'package:pothole_detection/modules/user_panel/domain/usecases/user_panel_usecases.dart';
 import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/services/shared_preference_service.dart';
+import 'package:pothole_detection/utils/network/custom_exception.dart';
 
 part 'user_panel_register_event.dart';
 part 'user_panel_register_state.dart';
@@ -22,7 +24,7 @@ class UserPanelRegisterBloc
   final TextEditingController descriptionController = TextEditingController();
 
   UploadImgUserResponse? uploadImgUserResponse;
-  Uint8List? imageBytes;
+  File? imageBytes;
 
   UserPanelRegisterBloc() : super(UserPanelRegisterInitial()) {
     on<UserPanelRegisterEvent>((event, emit) {});
@@ -46,7 +48,7 @@ class UserPanelRegisterBloc
         ));
 
         if (response.isLeft) {
-          emit(const UserPanelRegisterError(errorMessage: "Failure!"));
+          emit(UserPanelRegisterError(errorMessage: "Failure!"));
         } else {
           try {
             final data = response.right;
@@ -54,8 +56,7 @@ class UserPanelRegisterBloc
             if (data != null) {
               emit(UserPanelRegisterLoaded());
             } else {
-              emit(const UserPanelRegisterError(
-                  errorMessage: "No Data Available!"));
+              emit(UserPanelRegisterError(errorMessage: "No Data Available!"));
             }
           } catch (e) {
             emit(UserPanelRegisterError(errorMessage: 'An error occurred: $e'));
@@ -70,7 +71,7 @@ class UserPanelRegisterBloc
           // Call your API passing the imagePath
           final uploadImageUserUseCase =
               serviceLocator<UploadImageUserUseCase>();
-          final response = await uploadImageUserUseCase.invoke(event.bytes);
+          final response = await uploadImageUserUseCase.invoke(event.file);
 
           if (response.isLeft) {
             emit(UploadImageUserPanelError(errorMessage: "Failure!!"));
@@ -79,7 +80,8 @@ class UserPanelRegisterBloc
                 UploadImgUserResponse.fromJson(jsonDecode(response.right));
 
             if (uploadImgUserResponse != null) {
-              imageBytes = event.bytes;
+              imageBytes = event.file;
+              print("done");
               emit(UploadImageUserPanelSuccess());
             } else {
               emit(UploadImageUserPanelError(
@@ -87,9 +89,12 @@ class UserPanelRegisterBloc
             }
           }
         } catch (e) {
-          print("EXCEPTION: $e");
-          emit(
-              UploadImageUserPanelError(errorMessage: 'An error occurred: $e'));
+          if (e is UnauthorizedException) {
+            emit(NavigateToLoginPageEvent());
+          } else {
+            emit(UploadImageUserPanelError(
+                errorMessage: 'An error occurred: $e'));
+          }
         }
       },
     );

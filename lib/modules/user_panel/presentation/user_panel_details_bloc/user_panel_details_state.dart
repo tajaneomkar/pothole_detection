@@ -1,11 +1,6 @@
 part of 'user_panel_details_bloc.dart';
 
-sealed class UserPanelDetailsState extends Equatable {
-  const UserPanelDetailsState();
-
-  @override
-  List<Object> get props => [];
-}
+class UserPanelDetailsState {}
 
 final class UserPanelDetailsInitial extends UserPanelDetailsState {}
 
@@ -15,12 +10,14 @@ class UserPanelDetailsLoadedState extends UserPanelDetailsState {
   final GetPotHoleInformationByUIdResponseModel
       getPotHoleInformationByUIdResponseModel;
 
-  const UserPanelDetailsLoadedState(
+  UserPanelDetailsLoadedState(
       {required this.getPotHoleInformationByUIdResponseModel});
 }
 
 class UserPanelDetailsErrorState extends UserPanelDetailsState {
   final String errorMessage;
 
-  const UserPanelDetailsErrorState({required this.errorMessage});
+  UserPanelDetailsErrorState({required this.errorMessage});
 }
+
+class NavigateToLoginPageEvent extends UserPanelDetailsState {}

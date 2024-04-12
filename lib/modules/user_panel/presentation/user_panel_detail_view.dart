@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_details_bloc/user_panel_details_bloc.dart';
 import 'package:pothole_detection/services/service_locator.dart';
 
@@ -181,11 +182,16 @@ class _UserPanelDetailViewState extends State<UserPanelDetailView> {
               state.errorMessage,
             ),
           );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
+        } else if (state is NavigateToLoginPageEvent) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
           );
         }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
       },
     );
   }

@@ -4,7 +4,7 @@ import 'package:pothole_detection/modules/user_panel/data/model/get_pot_hole_by_
 import 'package:pothole_detection/modules/user_panel/data/model/get_pot_hole_by_uid_response_model.dart';
 import 'package:pothole_detection/modules/user_panel/domain/usecases/user_panel_usecases.dart';
 import 'package:pothole_detection/services/service_locator.dart';
-
+import 'package:pothole_detection/utils/network/custom_exception.dart';
 part 'user_panel_details_event.dart';
 part 'user_panel_details_state.dart';
 
@@ -23,7 +23,7 @@ class UserPanelDetailsBloc
         ));
 
         if (response.isLeft) {
-          emit(const UserPanelDetailsErrorState(errorMessage: "Failure!"));
+          emit(UserPanelDetailsErrorState(errorMessage: "Failure!"));
         } else {
           try {
             final data = GetPotHoleInformationByUIdResponseModel.fromJson(
@@ -34,12 +34,16 @@ class UserPanelDetailsBloc
                 getPotHoleInformationByUIdResponseModel: data,
               ));
             } else {
-              emit(const UserPanelDetailsErrorState(
+              emit(UserPanelDetailsErrorState(
                   errorMessage: "No Data Available!"));
             }
           } catch (e) {
-            emit(UserPanelDetailsErrorState(
-                errorMessage: 'An error occurred: $e'));
+            if (e is UnauthorizedException) {
+              emit(NavigateToLoginPageEvent());
+            } else {
+              emit(UserPanelDetailsErrorState(
+                  errorMessage: 'An error occurred: $e'));
+            }
           }
         }
       },
