@@ -33,7 +33,13 @@ class CustomSearchDropdown extends StatelessWidget {
     return DropdownSearch<String>(
       enabled: isEnable ?? true,
       selectedItem: selectedValue ?? initialValue,
-      onChanged: onChanged,
+      onChanged: (value) {
+        if (value == null && selectedValue != null) {
+          onChanged?.call(selectedValue);
+        } else {
+          onChanged?.call(value);
+        }
+      },
       popupProps: PopupProps.dialog(
           dialogProps: const DialogProps(
               backgroundColor: Color.fromARGB(255, 239, 240, 243),

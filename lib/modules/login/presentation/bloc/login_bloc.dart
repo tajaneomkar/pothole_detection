@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pothole_detection/modules/login/data/model/login_request_model.dart';
 import 'package:pothole_detection/modules/login/data/model/login_response_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/services/shared_preference_service.dart';
 import 'dart:convert';
@@ -40,11 +42,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         final accessToken = responseData['access_token'];
         final userData = responseData['user_data'];
 
-        // Save access token and user data to shared preferences
-        // await saveLoginData(accessToken, userData);
         serviceLocator<SharedPreferencesService>().authToken = accessToken;
         serviceLocator<SharedPreferencesService>().userID = userData["id"];
         serviceLocator<SharedPreferencesService>().userRole = userData["role"];
+        serviceLocator<SharedPreferencesService>().userEmail =
+            userData["email"];
+        serviceLocator<SharedPreferencesService>().userName =
+            userData["username"];
 
         final LoginResponseModel loginResponse =
             LoginResponseModel.fromJson(responseData);
@@ -64,25 +68,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     prefs.setString('user_data', json.encode(userData));
   }
 
-  Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.remove('access_token');
-    prefs.remove('user_data');
-  }
-
   Future<void> checkSavedLoginData(Emitter<LoginState> emit) async {
     final accessToken = serviceLocator<SharedPreferencesService>().authToken;
     final userId = serviceLocator<SharedPreferencesService>().userID;
     final userRole = serviceLocator<SharedPreferencesService>().userRole;
+    final userEmail = serviceLocator<SharedPreferencesService>().userEmail;
+    final userName = serviceLocator<SharedPreferencesService>().userName;
 
-    if (accessToken != "" && userId != "" && userRole != "") {
-      // If access token and user data exist, emit LoginSuccessState
-      // final userData = json.decode(userDataString);
+    if (accessToken != "" &&
+        userId != "" &&
+        userRole != "" &&
+        userName != "" &&
+        userEmail != "") {
       final loginResponse = LoginResponseModel(
         accessToken: accessToken,
-        userData: UserData(email: "", id: userId, username: "", role: userRole),
+        userData: UserData(
+            email: userEmail, id: userId, username: userName, role: userRole),
       );
-      // serviceLocator<SharedPreferencesService>().authToken = accessToken;
       emit(LoginSuccessState(response: loginResponse));
     }
   }

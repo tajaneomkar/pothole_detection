@@ -12,5 +12,7 @@ class UserPanelRegisterInitialEvent extends UserPanelRegisterEvent {}
 class UploadImageUserPanelInitialEvent extends UserPanelRegisterEvent {
   final File? file;
 
-  const UploadImageUserPanelInitialEvent(this.file);
+  const UploadImageUserPanelInitialEvent(
+    this.file,
+  );
 }

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:pothole_detection/modules/splash_screen/splash_screen.dart';
+import 'package:pothole_detection/config/router/app_router.dart';
 import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/services/shared_preference_service.dart';
 
 void main() async {
-  runApp(const MyApp());
+  runApp(MyApp());
   initializeDependencies();
   await serviceLocator<SharedPreferencesService>().initialise();
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final _appRouter = AppRouter();
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: _appRouter.config(),
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -22,7 +24,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
     );
   }
 }

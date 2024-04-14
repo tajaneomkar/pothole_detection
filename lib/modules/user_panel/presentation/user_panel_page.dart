@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_page_bloc/user_panel_bloc.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_detail_view.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_register_complaint.dart';
@@ -35,15 +32,73 @@ class _UserPanelState extends State<UserPanel> {
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            } else if (state is NavigateToLoginPageEvent) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const LoginPage(),
-                ),
-              );
             } else if (state is UserPanelLoadedState) {
               return Scaffold(
+                drawer: Drawer(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0, vertical: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              serviceLocator<SharedPreferencesService>()
+                                  .userName,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              serviceLocator<SharedPreferencesService>()
+                                  .userEmail,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const Divider(),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            const Divider(),
+                            const SizedBox(height: 5),
+                            GestureDetector(
+                              onTap: () {
+                                serviceLocator<SharedPreferencesService>()
+                                    .clearLoginData(context);
+                              },
+                              child: Container(
+                                child: const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Logout',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Icon(Icons.login_rounded)
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
                 appBar: AppBar(
+                  iconTheme: const IconThemeData(color: appWhite),
                   backgroundColor: kcPrimaryColorDark,
                   centerTitle: true,
                   title: const Text('USER PANEL',
@@ -64,6 +119,7 @@ class _UserPanelState extends State<UserPanel> {
                         ))
                   ],
                   bottom: TabBar(
+                    isScrollable: false,
                     indicatorSize: TabBarIndicatorSize.label,
                     labelStyle: const TextStyle(fontSize: 16),
                     indicatorColor: appWhite,
@@ -147,12 +203,10 @@ class _UserPanelState extends State<UserPanel> {
                                                           Radius.circular(16))),
                                               height: 60,
                                               width: 60,
-                                              child: Image.memory(
-                                                base64Decode(state
-                                                        .userPanelResponse[
-                                                            index]
+                                              child: Image.network(
+                                                state.userPanelResponse[index]
                                                         .image ??
-                                                    ""),
+                                                    "",
                                                 fit: BoxFit.fill,
                                               ),
                                             ),
@@ -185,6 +239,9 @@ class _UserPanelState extends State<UserPanel> {
                                                                     .address ??
                                                                 "",
                                                             style: const TextStyle(
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                                 fontSize: 15,
                                                                 fontWeight:
                                                                     FontWeight
@@ -281,21 +338,7 @@ class _UserPanelState extends State<UserPanel> {
                                                         .userPanelResponse[
                                                             index]
                                                         .image ??
-                                                    "")
-                                                // Image.network(state
-                                                //         .userPanelResponse[
-                                                //             index]
-                                                //         .image ??
-                                                //     "")
-                                                // Image.memory(
-                                                //   base64Decode(state
-                                                //           .userPanelResponse[
-                                                //               index]
-                                                //           .image ??
-                                                //       ""),
-                                                //   fit: BoxFit.fill,
-                                                // ),
-                                                ),
+                                                    "")),
                                             const SizedBox(width: 20),
                                             Expanded(
                                               child: Column(
@@ -421,16 +464,7 @@ class _UserPanelState extends State<UserPanel> {
                                                         .userPanelResponse[
                                                             index]
                                                         .image ??
-                                                    "")
-                                                //  Image.memory(
-                                                //   base64Decode(state
-                                                //           .userPanelResponse[
-                                                //               index]
-                                                //           .image ??
-                                                //       ""),
-                                                //   fit: BoxFit.fill,
-                                                // ),
-                                                ),
+                                                    "")),
                                             const SizedBox(width: 20),
                                             Expanded(
                                               child: Column(
@@ -510,15 +544,18 @@ class _UserPanelState extends State<UserPanel> {
                 ),
               );
             } else if (state is UserPanelErrorState) {
+              serviceLocator<SharedPreferencesService>()
+                  .clearLoginData(context);
               return Center(
                 child: Text(
                   state.errorMessage,
                 ),
               );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
           },
         ),
       ),

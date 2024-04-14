@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:pothole_detection/config/router/app_router.dart';
 import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 
+@RoutePage()
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -15,9 +18,10 @@ class SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 2), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
+      context.router.push(const LoginRoute());
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(builder: (context) => const LoginPage()),
+      // );
     });
   }
 
@@ -32,10 +36,6 @@ class SplashScreenState extends State<SplashScreen> {
                 'assets/splash.png',
               ),
               fit: BoxFit.fill),
-          // gradient: LinearGradient(
-          //     colors: [Colors.blue, Colors.purple],
-          //     begin: Alignment.topRight,
-          //     end: Alignment.bottomLeft)
         ),
       ),
     );

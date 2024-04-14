@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_page.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_register_bloc/user_panel_register_bloc.dart';
 import 'package:pothole_detection/services/service_locator.dart';
+import 'package:pothole_detection/services/shared_preference_service.dart';
 import 'package:pothole_detection/utils/common/app_colors.dart';
 import 'package:pothole_detection/utils/common/app_input.dart';
 import 'package:pothole_detection/utils/common/custom_button.dart';
@@ -26,6 +26,7 @@ class _UserPanelRegisterComplaintState
     return BlocProvider(
       create: (context) => serviceLocator<UserPanelRegisterBloc>(),
       child: Form(
+        key: _formKey,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: kcPrimaryColorDark,
@@ -33,6 +34,15 @@ class _UserPanelRegisterComplaintState
                 style: TextStyle(color: appWhite, letterSpacing: 1.2)),
             centerTitle: true,
             iconTheme: const IconThemeData(color: appWhite),
+            leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const UserPanel(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.arrow_back_ios_new_rounded)),
           ),
           body: BlocConsumer<UserPanelRegisterBloc, UserPanelRegisterState>(
             listener: (context, state) {
@@ -42,13 +52,9 @@ class _UserPanelRegisterComplaintState
                     builder: (context) => const UserPanel(),
                   ),
                 );
-              } else if (state is NavigateToLoginPageEvent) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPage(),
-                  ),
-                );
               } else if (state is UserPanelRegisterError) {
+                serviceLocator<SharedPreferencesService>()
+                    .clearLoginData(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -61,7 +67,7 @@ class _UserPanelRegisterComplaintState
                   const SnackBar(
                     backgroundColor: kcPrimaryColor,
                     duration: Duration(seconds: 1),
-                    content: Text('Your Complaint Submitted Succesfully'),
+                    content: Text('Your Image Upload Successfully'),
                   ),
                 );
               }
@@ -71,8 +77,6 @@ class _UserPanelRegisterComplaintState
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
-              } else if (state is UserPanelRegisterLoaded) {
-                return const SizedBox();
               }
 
               return Padding(
@@ -98,7 +102,7 @@ class _UserPanelRegisterComplaintState
                     AppInputField(
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'Please enter your Email-Id';
                         }
                         return null;
                       },
@@ -112,7 +116,7 @@ class _UserPanelRegisterComplaintState
                     AppInputField(
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'Please enter your Contact Number';
                         }
                         return null;
                       },
@@ -126,7 +130,7 @@ class _UserPanelRegisterComplaintState
                     DatePickerFormField(
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'Please Select Date';
                         }
                         return null;
                       },
@@ -140,7 +144,7 @@ class _UserPanelRegisterComplaintState
                     AppInputField(
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'Please Enter Address of Pothole';
                         }
                         return null;
                       },
@@ -152,12 +156,6 @@ class _UserPanelRegisterComplaintState
                     ),
                     const SizedBox(height: 20),
                     AppInputField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
-                        }
-                        return null;
-                      },
                       maxLines: 6,
                       label: 'Description',
                       hint: 'Enter your description',

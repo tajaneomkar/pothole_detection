@@ -1,16 +1,78 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pothole_detection/config/router/app_router.dart';
+import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/services/shared_preference_service.dart';
 import 'package:pothole_detection/utils/network/custom_exception.dart';
 import 'package:pothole_detection/utils/network/log.dart';
 
 class ApiProvider {
+  void handleUnauthorizedResponse(BuildContext context) {
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
+  }
+
+  // Future<dynamic> uploadFile({
+  //   BuildContext? context,
+  //   required String subUrl,
+  //   required String baseUrl,
+  //   required File file,
+  //   Map<String, String>? body,
+  // }) async {
+  //   var headers = <String, String>{};
+  //   headers["Content-Type"] = "multipart/form-data";
+  //   headers["Authorization"] =
+  //       "Bearer ${serviceLocator<SharedPreferencesService>().authToken}";
+
+  //   try {
+  //     dynamic responseJson;
+
+  //     final request = http.MultipartRequest(
+  //       'POST',
+  //       Uri.parse("$baseUrl$subUrl"),
+  //     );
+
+  //     request.headers.addAll(headers);
+
+  //     if (body != null) {
+  //       request.fields.addAll(body);
+  //     }
+
+  //     request.files.add(http.MultipartFile.fromBytes(
+  //       "file",
+  //       file.readAsBytesSync(),
+  //       filename: "file ${file.path}",
+  //     ));
+
+  //     final response = await request.send();
+
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       responseJson = await response.stream.bytesToString();
+
+  //       if (responseJson == null) return null;
+  //       return responseJson;
+  //     } else if (response.statusCode == 401 ||
+  //         response.statusCode == 402 ||
+  //         response.statusCode == 403) {
+  //       handleUnauthorizedResponse(context!);
+  //     } else {
+  //       return null;
+  //     }
+  //   } on TimeoutException catch (_) {
+  //     Log.error("ApiProvider get  failed with timeout");
+  //     return null;
+  //   } catch (e) {
+  //     Log.error("ApiProvider get failed with error $e");
+  //     return null;
+  //   }
+  // }
   Future<dynamic> uploadFile({
+    BuildContext? context,
     required String subUrl,
     required String baseUrl,
     required File file,
@@ -19,7 +81,7 @@ class ApiProvider {
     var headers = <String, String>{};
     headers["Content-Type"] = "multipart/form-data";
     headers["Authorization"] =
-        "Bearer ${serviceLocator<SharedPreferencesService>().authToken}";
+        "Bearer ${await serviceLocator<SharedPreferencesService>().authToken}";
 
     try {
       dynamic responseJson;
@@ -35,10 +97,15 @@ class ApiProvider {
         request.fields.addAll(body);
       }
 
-      request.files.add(http.MultipartFile.fromBytes(
+      if (!file.existsSync()) {
+        throw FileSystemException("File not found: ${file.path}");
+      }
+
+      request.files.add(http.MultipartFile(
         "file",
-        file.readAsBytesSync(),
-        filename: "file ${file.toString()}",
+        file.readAsBytes().asStream(),
+        file.lengthSync(),
+        filename: "file ${file.path}",
       ));
 
       final response = await request.send();
@@ -48,6 +115,14 @@ class ApiProvider {
 
         if (responseJson == null) return null;
         return responseJson;
+      } else if (response.statusCode == 401 ||
+          response.statusCode == 402 ||
+          response.statusCode == 403 ||
+          response.statusCode == 404) {
+        serviceLocator<AppRouter>().pushAndPopUntil(
+          const LoginRoute(),
+          predicate: (route) => route.data == null,
+        );
       } else {
         return null;
       }
@@ -63,6 +138,7 @@ class ApiProvider {
   Future<dynamic> getData({
     required String subUrl,
     required String baseUrl,
+    BuildContext? context,
     Map<String, dynamic>? body,
   }) async {
     var headers = <String, String>{};
@@ -84,6 +160,14 @@ class ApiProvider {
 
         if (responseJson == null) return null;
         return responseJson;
+      } else if (response.statusCode == 401 ||
+          response.statusCode == 402 ||
+          response.statusCode == 403 ||
+          response.statusCode == 404) {
+        serviceLocator<AppRouter>().pushAndPopUntil(
+          const LoginRoute(),
+          predicate: (route) => route.data == null,
+        );
       } else {
         return null;
       }
@@ -97,6 +181,7 @@ class ApiProvider {
   }
 
   Future<dynamic> putData({
+    BuildContext? context,
     required String subUrl,
     required String baseUrl,
     Map<String, dynamic>? body,
@@ -120,6 +205,14 @@ class ApiProvider {
 
         if (responseJson == null) return null;
         return responseJson;
+      } else if (response.statusCode == 401 ||
+          response.statusCode == 402 ||
+          response.statusCode == 403 ||
+          response.statusCode == 404) {
+        serviceLocator<AppRouter>().pushAndPopUntil(
+          const LoginRoute(),
+          predicate: (route) => route.data == null,
+        );
       } else {
         return null;
       }

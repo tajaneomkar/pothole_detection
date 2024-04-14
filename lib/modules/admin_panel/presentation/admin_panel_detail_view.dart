@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pothole_detection/modules/admin_panel/presentation/admin_panel_page.dart';
 import 'package:pothole_detection/modules/admin_panel/presentation/bloc/admin_detail_view_bloc/admin_detail_view_bloc.dart';
+import 'package:pothole_detection/modules/admin_panel/widget/popup_dailog.dart';
 import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/services/service_locator.dart';
+import 'package:pothole_detection/services/shared_preference_service.dart';
 import 'package:pothole_detection/utils/common/app_colors.dart';
+import 'package:pothole_detection/utils/common/app_input.dart';
 import 'package:pothole_detection/utils/common/custom_button.dart';
 import 'package:pothole_detection/utils/common/custom_search_dropdown.dart';
 
@@ -38,11 +41,13 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
               child: CircularProgressIndicator(),
             );
           } else if (state is AdminPanelDetailsLoadedState) {
+            String? imageUrl =
+                state.getPotHoleInformationByAdminUIdResponseModel.image ?? '';
             return Scaffold(
                 appBar: AppBar(
                   backgroundColor: kcPrimaryColorDark,
                   iconTheme: const IconThemeData(color: appWhite),
-                  title: const Text('COMPLAIANT DETAILS',
+                  title: const Text('COMPLAINT DETAILS',
                       style: TextStyle(color: appWhite, fontSize: 18)),
                   centerTitle: true,
                 ),
@@ -53,13 +58,15 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Image.network(
-                              state.getPotHoleInformationByAdminUIdResponseModel
-                                      .image ??
-                                  '',
-                              fit: BoxFit.fill,
+                          Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: Image.network(
+                                state.getPotHoleInformationByAdminUIdResponseModel
+                                        .image ??
+                                    '',
+                                fit: BoxFit.fill,
+                              ),
                             ),
                           ),
                           if (state.getPotHoleInformationByAdminUIdResponseModel
@@ -69,139 +76,134 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  TextButton(
-                                      onPressed: () {
-                                        BlocProvider.of<AdminDetailViewBloc>(
-                                                context)
-                                            .add(VerifyPotholeImageEvent(
-                                                imageUrl: state
-                                                        .getPotHoleInformationByAdminUIdResponseModel
-                                                        .image ??
-                                                    ''));
-                                      },
-                                      child: const Text(
-                                        'Verify the Pothole Image',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w400,
-                                            color: kcPrimaryColorDark),
-                                      ))
+                                  BlocConsumer<AdminDetailViewBloc,
+                                      AdminDetailViewState>(
+                                    listener: (context, state) {
+                                      if (state
+                                          is AdminPanelDetailsLoadingState) {
+                                        const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else if (state
+                                          is VerifyPotholeImageLoadedState) {
+                                        if (state.verifyPotholeImgResponseModel
+                                                .response ==
+                                            'notpothole\n') {
+                                          IconMessagePopup.show(
+                                            circleColor: dashboardContainer2,
+                                            context,
+                                            iconData:
+                                                Icons.info_outline_rounded,
+                                            message:
+                                                'This is not Pothole Image',
+                                            iconColor: Colors.red,
+                                            iconSize: 64.0,
+                                            onPressed: () {
+                                              Navigator.canPop(context);
+                                            },
+                                          );
+                                        } else {
+                                          IconMessagePopup.show(
+                                            circleColor: dashboardContainer2,
+                                            context,
+                                            iconData: Icons.check,
+                                            message: 'This is Pothole Image',
+                                            iconColor: Colors.green,
+                                            iconSize: 64.0,
+                                            onPressed: () {
+                                              Navigator.canPop(context);
+                                            },
+                                          );
+                                        }
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      return TextButton(
+                                          onPressed: () {
+                                            BlocProvider.of<
+                                                        AdminDetailViewBloc>(
+                                                    context)
+                                                .add(VerifyPotholeImageEvent(
+                                                    imageUrl: imageUrl));
+                                          },
+                                          child: const Text(
+                                            'Verify the Pothole Image',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w400,
+                                                color: kcPrimaryColorDark),
+                                          ));
+                                    },
+                                  ),
                                 ]),
                           ],
                           const SizedBox(
                             height: 5,
                           ),
-                          Text(
-                              state.getPotHoleInformationByAdminUIdResponseModel
-                                      .name ??
-                                  '',
-                              style: const TextStyle(
-                                  fontSize: 25, fontWeight: FontWeight.w700)),
+                          AppInputField(
+                            enabled: false,
+                            hint: state
+                                    .getPotHoleInformationByAdminUIdResponseModel
+                                    .name ??
+                                '',
+                            label: 'Name',
+                          ),
                           const SizedBox(
                             height: 20,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Email-Id: ',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700)),
-                              Flexible(
-                                child: Text(
-                                    state.getPotHoleInformationByAdminUIdResponseModel
-                                            .email ??
-                                        '',
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500)),
-                              ),
-                            ],
+                          AppInputField(
+                            enabled: false,
+                            hint: state
+                                    .getPotHoleInformationByAdminUIdResponseModel
+                                    .email ??
+                                '',
+                            label: 'Email-Id',
                           ),
                           const SizedBox(
                             height: 10,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Contact: ',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700)),
-                              Flexible(
-                                child: Text(
-                                    state.getPotHoleInformationByAdminUIdResponseModel
-                                            .phoneNo ??
-                                        '',
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500)),
-                              ),
-                            ],
+                          AppInputField(
+                            enabled: false,
+                            hint: state
+                                    .getPotHoleInformationByAdminUIdResponseModel
+                                    .phoneNo ??
+                                '',
+                            label: 'Contact',
                           ),
                           const SizedBox(
                             height: 10,
                           ),
-                          Row(
-                            children: [
-                              const Text('Date: ',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700)),
-                              Text(
-                                  state.getPotHoleInformationByAdminUIdResponseModel
-                                          .date ??
-                                      '',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500)),
-                            ],
+                          AppInputField(
+                            enabled: false,
+                            hint: state
+                                    .getPotHoleInformationByAdminUIdResponseModel
+                                    .date ??
+                                '',
+                            label: 'Date',
                           ),
                           const SizedBox(
                             height: 10,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Description: ',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700)),
-                              Flexible(
-                                child: Text(
-                                    state.getPotHoleInformationByAdminUIdResponseModel
-                                            .description ??
-                                        '',
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500)),
-                              ),
-                            ],
+                          AppInputField(
+                            maxLines: 6,
+                            enabled: false,
+                            hint: state
+                                    .getPotHoleInformationByAdminUIdResponseModel
+                                    .description ??
+                                '',
+                            label: 'Description',
                           ),
                           const SizedBox(
                             height: 10,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Address: ',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700)),
-                              Flexible(
-                                child: Text(
-                                    state.getPotHoleInformationByAdminUIdResponseModel
-                                            .address ??
-                                        '',
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500)),
-                              ),
-                            ],
+                          AppInputField(
+                            maxLines: 6,
+                            enabled: false,
+                            hint: state
+                                    .getPotHoleInformationByAdminUIdResponseModel
+                                    .address ??
+                                '',
+                            label: 'Address',
                           ),
                           const SizedBox(
                             height: 10,
@@ -220,7 +222,12 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                             onChanged: (value) {
                               BlocProvider.of<AdminDetailViewBloc>(context)
                                   .statusController
-                                  .text = value ?? "";
+                                  .text = value ?? '';
+                            },
+                            onSaved: (value) {
+                              BlocProvider.of<AdminDetailViewBloc>(context)
+                                  .statusController
+                                  .text = value ?? '';
                             },
                             items: const ['active', 'pending', 'completed'],
                             showSearchBox: false,
@@ -235,20 +242,30 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                             height: 5,
                           ),
                           CustomSearchDropdown(
+                            isEnable:
+                                state.getPotHoleInformationByAdminUIdResponseModel
+                                            .status ==
+                                        'pending'
+                                    ? true
+                                    : false,
                             initialValue: state
-                                    .getPotHoleInformationByAdminUIdResponseModel
-                                    .assignee ??
-                                '',
+                                        .getPotHoleInformationByAdminUIdResponseModel
+                                        .status ==
+                                    'pending'
+                                ? " "
+                                : state.getPotHoleInformationByAdminUIdResponseModel
+                                        .assignee ??
+                                    '',
                             onChanged: (value) {
                               BlocProvider.of<AdminDetailViewBloc>(context)
                                   .assignContractorController
-                                  .text = value ?? "";
+                                  .text = value ?? '';
                             },
                             items: const [
-                              'Sayali',
-                              'Anushri',
-                              'Dhiraj',
-                              'Priyanka'
+                              'Sayali Shardul',
+                              'Asmita Shimpi',
+                              'Anushri Sonwane ',
+                              'Purva Kohok '
                             ],
                             showSearchBox: false,
                           ),
@@ -262,6 +279,14 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                                 AdminDetailViewState>(
                               listener: (context, state) {
                                 if (state is AdminUpdateStatusLoadedState) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      backgroundColor: kcPrimaryColor,
+                                      duration: Duration(seconds: 1),
+                                      content: Text(
+                                          'Client Complaint Updated Successfully'),
+                                    ),
+                                  );
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                       builder: (context) => const AdminPanel(),
@@ -285,14 +310,6 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                                     buttonColor: kcPrimaryColorDark,
                                     height: 45,
                                     onPressed: () {
-                                      // ScaffoldMessenger.of(context).showSnackBar(
-                                      //   const SnackBar(
-                                      //     backgroundColor: kcPrimaryColor,
-                                      //     duration: Duration(seconds: 1),
-                                      //     content: Text(
-                                      //         'Client Complaint Updated Successfully'),
-                                      //   ),
-                                      // );
                                       BlocProvider.of<AdminDetailViewBloc>(
                                               context)
                                           .add(AdminUpdateStatusEvent(
@@ -309,24 +326,21 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                   ),
                 ));
           } else if (state is AdminPanelDetailsErrorState) {
+            serviceLocator<SharedPreferencesService>().clearLoginData(context);
             return Center(
               child: Text(
                 state.errorMessage,
               ),
             );
-          } else if (state is NavigateToLoginPageEvent) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const LoginPage(),
-              ),
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
         },
         listener: (context, state) {
           if (state is AdminPanelDetailsErrorState) {
+            serviceLocator<SharedPreferencesService>().clearLoginData(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(

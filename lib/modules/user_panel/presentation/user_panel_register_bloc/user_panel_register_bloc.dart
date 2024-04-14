@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +80,7 @@ class UserPanelRegisterBloc
 
             if (uploadImgUserResponse != null) {
               imageBytes = event.file;
-              print("done");
+
               emit(UploadImageUserPanelSuccess());
             } else {
               emit(UploadImageUserPanelError(

@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:pothole_detection/config/router/app_router.dart';
 import 'package:pothole_detection/modules/admin_panel/data/repositories/admin_panel_repositories.dart';
 import 'package:pothole_detection/modules/admin_panel/domain/repositories/repositories.dart';
 import 'package:pothole_detection/modules/admin_panel/domain/usecases/admin_panel_usecases.dart';
@@ -21,6 +22,7 @@ final serviceLocator = GetIt.instance;
 void initializeDependencies() async {
   serviceLocator
       .registerSingleton<SharedPreferencesService>(SharedPreferencesService());
+  serviceLocator.registerSingleton<AppRouter>(AppRouter());
 
   // Login Page
   serviceLocator.registerFactory<LoginBloc>(() => LoginBloc());

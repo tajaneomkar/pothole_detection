@@ -1,10 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_details_bloc/user_panel_details_bloc.dart';
 import 'package:pothole_detection/services/service_locator.dart';
+import 'package:pothole_detection/services/shared_preference_service.dart';
+import 'package:pothole_detection/utils/common/app_colors.dart';
+import 'package:pothole_detection/utils/common/app_input.dart';
 
 class UserPanelDetailView extends StatefulWidget {
   const UserPanelDetailView({
@@ -36,7 +36,15 @@ class _UserPanelDetailViewState extends State<UserPanelDetailView> {
           );
         } else if (state is UserPanelDetailsLoadedState) {
           return Scaffold(
-            appBar: AppBar(),
+            appBar: AppBar(
+              centerTitle: true,
+              title: const Text(
+                'COMPLAINT DETAILS',
+                style: TextStyle(color: appWhite),
+              ),
+              iconTheme: const IconThemeData(color: appWhite),
+              backgroundColor: kcPrimaryColorDark,
+            ),
             body: Padding(
               padding: const EdgeInsets.only(
                   top: 16, bottom: 25, left: 12, right: 12),
@@ -47,151 +55,93 @@ class _UserPanelDetailViewState extends State<UserPanelDetailView> {
                       Center(
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(6),
-                            child: Image.memory(
+                            child: Image.network(
                               width: double.infinity,
                               height: 250,
-                              base64Decode(state
-                                      .getPotHoleInformationByUIdResponseModel
+                              state.getPotHoleInformationByUIdResponseModel
                                       .image ??
-                                  ''),
+                                  '',
                               fit: BoxFit.fill,
                             )),
                       ),
                       const SizedBox(
                         height: 30,
                       ),
-                      Center(
-                        child: Text(
-                            state.getPotHoleInformationByUIdResponseModel
-                                    .name ??
-                                '',
-                            style: const TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.w700)),
+                      AppInputField(
+                        enabled: false,
+                        hint: state
+                                .getPotHoleInformationByUIdResponseModel.name ??
+                            '',
+                        label: 'Name',
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      AppInputField(
+                        enabled: false,
+                        hint: state.getPotHoleInformationByUIdResponseModel
+                                .email ??
+                            '',
+                        label: 'Email-Id',
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Email-Id: ',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700)),
-                          const SizedBox(width: 5),
-                          Flexible(
-                            child: Text(
-                                state.getPotHoleInformationByUIdResponseModel
-                                        .email ??
-                                    '',
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500)),
-                          ),
-                        ],
+                      AppInputField(
+                        enabled: false,
+                        hint: state.getPotHoleInformationByUIdResponseModel
+                                .phoneNo ??
+                            '',
+                        label: 'Contact',
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Contact: ',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700)),
-                          const SizedBox(width: 5),
-                          Flexible(
-                            child: Text(
-                                state.getPotHoleInformationByUIdResponseModel
-                                        .phoneNo ??
-                                    '',
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500)),
-                          ),
-                        ],
+                      AppInputField(
+                        enabled: false,
+                        hint: state
+                                .getPotHoleInformationByUIdResponseModel.date ??
+                            '',
+                        label: 'Date',
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      Row(
-                        children: [
-                          const Text('Date: ',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700)),
-                          const SizedBox(width: 5),
-                          Text(
-                              state.getPotHoleInformationByUIdResponseModel
-                                      .date ??
-                                  '',
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500)),
-                        ],
+                      AppInputField(
+                        enabled: false,
+                        hint: state.getPotHoleInformationByUIdResponseModel
+                                .description ??
+                            '',
+                        label: 'Description',
+                        maxLines: 6,
                       ),
                       const SizedBox(
                         height: 10,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Description: ',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700)),
-                          const SizedBox(width: 5),
-                          Flexible(
-                            child: Text(
-                                state.getPotHoleInformationByUIdResponseModel
-                                        .description ??
-                                    '',
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500)),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Address: ',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w700)),
-                          const SizedBox(width: 5),
-                          Flexible(
-                            child: Text(
-                                state.getPotHoleInformationByUIdResponseModel
-                                        .address ??
-                                    '',
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500)),
-                          ),
-                        ],
+                      AppInputField(
+                        enabled: false,
+                        hint: state.getPotHoleInformationByUIdResponseModel
+                                .address ??
+                            '',
+                        label: 'Address',
+                        maxLines: 6,
                       ),
                     ]),
               ),
             ),
           );
         } else if (state is UserPanelDetailsErrorState) {
+          serviceLocator<SharedPreferencesService>().clearLoginData(context);
           return Center(
             child: Text(
               state.errorMessage,
             ),
           );
-        } else if (state is NavigateToLoginPageEvent) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const LoginPage(),
-            ),
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
         }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
       },
     );
   }

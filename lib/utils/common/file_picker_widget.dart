@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -82,49 +81,6 @@ class _FilePickerButtonState extends State<FilePickerButton> {
       },
     );
   }
-
-  // Future<void> openFilePicker(BuildContext context) async {
-  //   try {
-  //     final result = await FilePicker.platform.pickFiles(
-  //       type: FileType.image,
-  //     );
-
-  //     if (result != null) {
-  //       BlocProvider.of<UserPanelRegisterBloc>(context)
-  //           .add(UploadImageUserPanelInitialEvent(result.files.first.bytes));
-  //     } else {
-  //       print('User canceled file picking');
-  //     }
-  //   } catch (e) {
-  //     print('Error picking file: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Error picking file. Please try again later.'),
-  //       ),
-  //     );
-  //   }
-  // }
-
-  // Future<void> openCamera(BuildContext context) async {
-  //   try {
-  //     final result = await FilePicker.platform.pickFiles(
-  //       type: FileType.image,
-  //     );
-
-  //     if (result != null) {
-  //       BlocProvider.of<UserPanelRegisterBloc>(context)
-  //           .add(UploadImageUserPanelInitialEvent(result.files.first.bytes));
-  //     } else {
-  //       print('User canceled capturing');
-  //     }
-  //   } catch (e) {
-  //     print('Error capturing image: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Error capturing image. Please try again later.'),
-  //       ),
-  //     );
-  //   }
 
   Future<void> getImage(BuildContext context, ImageSource source) async {
     try {
