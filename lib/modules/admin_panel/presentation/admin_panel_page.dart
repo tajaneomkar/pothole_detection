@@ -138,189 +138,57 @@ class _AdminPanelState extends State<AdminPanel> {
                     ],
                   ),
                 ),
-                body: TabBarView(
-                  children: [
-                    Column(children: [
-                      Expanded(
-                        child: state.adminPanelResponse.isEmpty
-                            ? const Center(
-                                child: Text("No Records Available!!"),
-                              )
-                            : ListView.separated(
-                                itemCount: state.adminPanelResponse.length,
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const SizedBox(height: 10),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              AdminPanelDetailView(
-                                            id: state.adminPanelResponse[index]
-                                                    .id ??
-                                                "",
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              decoration: const BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(16))),
-                                              height: 60,
-                                              width: 60,
-                                              child: Image.network(
-                                                state.adminPanelResponse[index]
-                                                        .image ??
-                                                    "",
-                                                fit: BoxFit.fill,
-                                              ),
+                body: RefreshIndicator(
+                  onRefresh: () async {
+                    BlocProvider.of<AdminPanelBloc>(context)
+                        .add(FetchAdminPanelData(
+                      status: "pending",
+                      userID: serviceLocator<SharedPreferencesService>().userID,
+                    ));
+                  },
+                  child: TabBarView(
+                    children: [
+                      Column(children: [
+                        Expanded(
+                          child: state.adminPanelResponse.isEmpty
+                              ? const Center(
+                                  child: Text("No Records Available!!"),
+                                )
+                              : ListView.separated(
+                                  itemCount: state.adminPanelResponse.length,
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          const SizedBox(height: 10),
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AdminPanelDetailView(
+                                              id: state
+                                                      .adminPanelResponse[index]
+                                                      .id ??
+                                                  "",
                                             ),
-                                            const SizedBox(width: 20),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    state
-                                                            .adminPanelResponse[
-                                                                index]
-                                                            .name ??
-                                                        "",
-                                                    style: const TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w700),
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Flexible(
-                                                        child: Text(
-                                                          'Location: ',
-                                                          style: TextStyle(
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700),
-                                                        ),
-                                                      ),
-                                                      Flexible(
-                                                        child: Text(
-                                                            state
-                                                                    .adminPanelResponse[
-                                                                        index]
-                                                                    .address ??
-                                                                "",
-                                                            style: const TextStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Text(
-                                                        'Date of Register: ',
-                                                        style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700),
-                                                      ),
-                                                      Flexible(
-                                                        flex: 1,
-                                                        child: Text(
-                                                            state
-                                                                    .adminPanelResponse[
-                                                                        index]
-                                                                    .date ??
-                                                                "",
-                                                            style: const TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                      )
-                    ]),
-                    Column(children: [
-                      Expanded(
-                        child: state.adminPanelResponse.isEmpty
-                            ? const Center(
-                                child: Text("No Records Available!!"),
-                              )
-                            : ListView.separated(
-                                itemCount: state.adminPanelResponse.length,
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const SizedBox(height: 10),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              AdminPanelDetailView(
-                                            id: state.adminPanelResponse[index]
-                                                    .id ??
-                                                "",
                                           ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Container(
+                                        );
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(6)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
                                                 decoration: const BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.all(
@@ -328,243 +196,397 @@ class _AdminPanelState extends State<AdminPanel> {
                                                                 16))),
                                                 height: 60,
                                                 width: 60,
-                                                child: Image.network(state
-                                                        .adminPanelResponse[
-                                                            index]
-                                                        .image ??
-                                                    "")),
-                                            const SizedBox(width: 20),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    state
-                                                            .adminPanelResponse[
-                                                                index]
-                                                            .name ??
-                                                        "",
-                                                    style: const TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w700),
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Flexible(
-                                                        child: Text(
-                                                          'Location: ',
+                                                child: Image.network(
+                                                  state
+                                                          .adminPanelResponse[
+                                                              index]
+                                                          .image ??
+                                                      "",
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 20),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    Text(
+                                                      state
+                                                              .adminPanelResponse[
+                                                                  index]
+                                                              .name ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      children: [
+                                                        const Flexible(
+                                                          child: Text(
+                                                            'Location: ',
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          child: Text(
+                                                              state
+                                                                      .adminPanelResponse[
+                                                                          index]
+                                                                      .address ??
+                                                                  "",
+                                                              style: const TextStyle(
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      children: [
+                                                        const Text(
+                                                          'Date of Register: ',
                                                           style: TextStyle(
-                                                              fontSize: 16,
+                                                              fontSize: 15,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700),
                                                         ),
-                                                      ),
-                                                      Flexible(
-                                                        child: Text(
-                                                            state
-                                                                    .adminPanelResponse[
-                                                                        index]
-                                                                    .address ??
-                                                                "",
-                                                            style: const TextStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Text(
-                                                        'Date of Register: ',
-                                                        style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700),
-                                                      ),
-                                                      Flexible(
-                                                        flex: 1,
-                                                        child: Text(
-                                                            state
-                                                                    .adminPanelResponse[
-                                                                        index]
-                                                                    .date ??
-                                                                "",
-                                                            style: const TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                      )
-                    ]),
-                    Column(children: [
-                      Expanded(
-                        child: state.adminPanelResponse.isEmpty
-                            ? const Center(
-                                child: Text("No Records Available!!"),
-                              )
-                            : ListView.separated(
-                                itemCount: state.adminPanelResponse.length,
-                                separatorBuilder:
-                                    (BuildContext context, int index) =>
-                                        const SizedBox(height: 10),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              AdminPanelDetailView(
-                                            id: state.adminPanelResponse[index]
-                                                    .id ??
-                                                "",
+                                                        Flexible(
+                                                          flex: 1,
+                                                          child: Text(
+                                                              state
+                                                                      .adminPanelResponse[
+                                                                          index]
+                                                                      .date ??
+                                                                  "",
+                                                              style: const TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         ),
-                                      );
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                                decoration: const BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                16))),
-                                                height: 60,
-                                                width: 60,
-                                                child: Image.network(state
-                                                        .adminPanelResponse[
-                                                            index]
-                                                        .image ??
-                                                    "")),
-                                            const SizedBox(width: 20),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(
-                                                    state
-                                                            .adminPanelResponse[
-                                                                index]
-                                                            .name ??
-                                                        "",
-                                                    style: const TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w700),
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Flexible(
-                                                        child: Text(
-                                                          'Location: ',
+                                      ),
+                                    );
+                                  },
+                                ),
+                        )
+                      ]),
+                      Column(children: [
+                        Expanded(
+                          child: state.adminPanelResponse.isEmpty
+                              ? const Center(
+                                  child: Text("No Records Available!!"),
+                                )
+                              : ListView.separated(
+                                  itemCount: state.adminPanelResponse.length,
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          const SizedBox(height: 10),
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AdminPanelDetailView(
+                                              id: state
+                                                      .adminPanelResponse[index]
+                                                      .id ??
+                                                  "",
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(6)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          16))),
+                                                  height: 60,
+                                                  width: 60,
+                                                  child: Image.network(state
+                                                          .adminPanelResponse[
+                                                              index]
+                                                          .image ??
+                                                      "")),
+                                              const SizedBox(width: 20),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    Text(
+                                                      state
+                                                              .adminPanelResponse[
+                                                                  index]
+                                                              .name ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      children: [
+                                                        const Flexible(
+                                                          child: Text(
+                                                            'Location: ',
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          child: Text(
+                                                              state
+                                                                      .adminPanelResponse[
+                                                                          index]
+                                                                      .address ??
+                                                                  "",
+                                                              style: const TextStyle(
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      children: [
+                                                        const Text(
+                                                          'Date of Register: ',
                                                           style: TextStyle(
-                                                              fontSize: 16,
+                                                              fontSize: 15,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700),
                                                         ),
-                                                      ),
-                                                      Flexible(
-                                                        child: Text(
-                                                            state
-                                                                    .adminPanelResponse[
-                                                                        index]
-                                                                    .address ??
-                                                                "",
-                                                            style: const TextStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Text(
-                                                        'Date of Register: ',
-                                                        style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700),
-                                                      ),
-                                                      Flexible(
-                                                        flex: 1,
-                                                        child: Text(
-                                                            state
-                                                                    .adminPanelResponse[
-                                                                        index]
-                                                                    .date ??
-                                                                "",
-                                                            style: const TextStyle(
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ],
+                                                        Flexible(
+                                                          flex: 1,
+                                                          child: Text(
+                                                              state
+                                                                      .adminPanelResponse[
+                                                                          index]
+                                                                      .date ??
+                                                                  "",
+                                                              style: const TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              ),
-                      )
-                    ]),
-                  ],
+                                    );
+                                  },
+                                ),
+                        )
+                      ]),
+                      Column(children: [
+                        Expanded(
+                          child: state.adminPanelResponse.isEmpty
+                              ? const Center(
+                                  child: Text("No Records Available!!"),
+                                )
+                              : ListView.separated(
+                                  itemCount: state.adminPanelResponse.length,
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          const SizedBox(height: 10),
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AdminPanelDetailView(
+                                              id: state
+                                                      .adminPanelResponse[index]
+                                                      .id ??
+                                                  "",
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(6)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          16))),
+                                                  height: 60,
+                                                  width: 60,
+                                                  child: Image.network(state
+                                                          .adminPanelResponse[
+                                                              index]
+                                                          .image ??
+                                                      "")),
+                                              const SizedBox(width: 20),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    Text(
+                                                      state
+                                                              .adminPanelResponse[
+                                                                  index]
+                                                              .name ??
+                                                          "",
+                                                      style: const TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      children: [
+                                                        const Flexible(
+                                                          child: Text(
+                                                            'Location: ',
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          child: Text(
+                                                              state
+                                                                      .adminPanelResponse[
+                                                                          index]
+                                                                      .address ??
+                                                                  "",
+                                                              style: const TextStyle(
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 5),
+                                                    Row(
+                                                      children: [
+                                                        const Text(
+                                                          'Date of Register: ',
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700),
+                                                        ),
+                                                        Flexible(
+                                                          flex: 1,
+                                                          child: Text(
+                                                              state
+                                                                      .adminPanelResponse[
+                                                                          index]
+                                                                      .date ??
+                                                                  "",
+                                                              style: const TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400)),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                        )
+                      ]),
+                    ],
+                  ),
                 ),
               );
             } else if (state is AdminPanelErrorState) {

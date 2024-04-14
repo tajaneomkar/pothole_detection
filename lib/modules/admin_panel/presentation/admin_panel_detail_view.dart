@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pothole_detection/modules/admin_panel/presentation/admin_panel_page.dart';
@@ -85,6 +86,11 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                                           child: CircularProgressIndicator(),
                                         );
                                       } else if (state
+                                          is AdminPanelDetailsLoadingState) {
+                                        const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      } else if (state
                                           is VerifyPotholeImageLoadedState) {
                                         if (state.verifyPotholeImgResponseModel
                                                 .response ==
@@ -99,7 +105,7 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                                             iconColor: Colors.red,
                                             iconSize: 64.0,
                                             onPressed: () {
-                                              Navigator.canPop(context);
+                                              AutoRouter.of(context).pop();
                                             },
                                           );
                                         } else {
@@ -111,13 +117,19 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                                             iconColor: Colors.green,
                                             iconSize: 64.0,
                                             onPressed: () {
-                                              Navigator.canPop(context);
+                                              AutoRouter.of(context).pop();
                                             },
                                           );
                                         }
                                       }
                                     },
                                     builder: (context, state) {
+                                      if (state
+                                          is AdminPanelDetailsLoadingState) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
                                       return TextButton(
                                           onPressed: () {
                                             BlocProvider.of<
@@ -138,7 +150,7 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                                 ]),
                           ],
                           const SizedBox(
-                            height: 5,
+                            height: 10,
                           ),
                           AppInputField(
                             enabled: false,
@@ -215,10 +227,11 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                             height: 5,
                           ),
                           CustomSearchDropdown(
+                            selectedValue: 'pending',
                             initialValue: state
                                     .getPotHoleInformationByAdminUIdResponseModel
                                     .status ??
-                                '',
+                                'pending',
                             onChanged: (value) {
                               BlocProvider.of<AdminDetailViewBloc>(context)
                                   .statusController

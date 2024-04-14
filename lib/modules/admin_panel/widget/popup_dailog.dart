@@ -81,15 +81,17 @@ class IconMessagePopup {
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
               ),
               const SizedBox(height: 16.0),
-              TextButton(
-                onPressed: onPressed,
-                child: const Text(
-                  'OK',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
-                ),
-              ),
             ],
           ),
+          actions: [
+            TextButton(
+              onPressed: onPressed,
+              child: const Text(
+                'OK',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+              ),
+            ),
+          ],
         );
       },
     );
