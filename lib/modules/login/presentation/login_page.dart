@@ -1,9 +1,10 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pothole_detection/modules/admin_panel/presentation/admin_panel_page.dart';
+import 'package:pothole_detection/config/router/app_router.dart';
+import 'package:pothole_detection/config/router/app_router.gr.dart';
 import 'package:pothole_detection/modules/login/presentation/bloc/login_bloc.dart';
-import 'package:pothole_detection/modules/user_panel/presentation/user_panel_page.dart';
+import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/utils/common/app_colors.dart';
 import 'package:pothole_detection/utils/common/app_input.dart';
 import 'package:pothole_detection/utils/common/custom_button.dart';
@@ -31,17 +32,9 @@ class _LoginPageState extends State<LoginPage> {
           listener: (context, state) {
             if (state is LoginSuccessState) {
               if (state.response?.userData?.role == 'admin') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const AdminPanel(),
-                  ),
-                );
+                serviceLocator<AppRouter>().replace(const AdminPanelRoute());
               } else if (state.response?.userData?.role == 'user') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const UserPanel(),
-                  ),
-                );
+                serviceLocator<AppRouter>().replace(const UserPanelRoute());
               }
             } else if (state is LoginFailureState) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -106,19 +99,6 @@ class _LoginPageState extends State<LoginPage> {
                                     ? Icons.visibility_outlined
                                     : Icons.visibility_off_outlined)),
                           ),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.end,
-                          //   children: [
-                          //     TextButton(
-                          //       child: const Text('Forget Password?',
-                          //           style: TextStyle(
-                          //               color: kcPrimaryColorDark,
-                          //               fontSize: 18,
-                          //               fontWeight: FontWeight.w500)),
-                          //       onPressed: () {},
-                          //     )
-                          //   ],
-                          // ),
                           const SizedBox(height: 50),
                           CustomButton(
                             isLoading:
@@ -137,33 +117,6 @@ class _LoginPageState extends State<LoginPage> {
                             textColor: appWhite,
                             buttonColor: kcPrimaryColorDark,
                           ),
-                          // const SizedBox(height: 100),
-                          // const Text.rich(
-                          //   TextSpan(
-                          //     text: 'New to the app? ',
-                          //     style: TextStyle(
-                          //       fontSize: 15,
-                          //       fontWeight: FontWeight.w400,
-                          //       color: kcPrimaryColorDark, // Define your color
-                          //     ),
-                          //     children: [
-                          //       TextSpan(
-                          //         text: 'Sign up',
-                          //         style: TextStyle(
-                          //           fontSize: 15,
-                          //           fontWeight: FontWeight.w400,
-                          //           color:
-                          //               kcPrimaryColorDark, // Define your color
-                          //           decoration: TextDecoration
-                          //               .underline, // Add underline decoration
-                          //         ),
-                          //       ),
-                          //       TextSpan(
-                          //         text: ' now to connect!',
-                          //       ),
-                          //     ],
-                          //   ),
-                          // )
                         ],
                       ),
                     ),

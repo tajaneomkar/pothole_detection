@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pothole_detection/config/router/app_router.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_register_bloc/user_panel_register_bloc.dart';
+import 'package:pothole_detection/services/service_locator.dart';
 
 class FilePickerButton extends StatefulWidget {
   const FilePickerButton({super.key});
@@ -64,7 +66,7 @@ class _FilePickerButtonState extends State<FilePickerButton> {
                 title: const Text('Camera'),
                 onTap: () {
                   openCamera(context);
-                  Navigator.pop(context);
+                  serviceLocator<AppRouter>().maybePop();
                 },
               ),
               ListTile(
@@ -72,7 +74,7 @@ class _FilePickerButtonState extends State<FilePickerButton> {
                 title: const Text('Gallery'),
                 onTap: () {
                   openFilePicker(context);
-                  Navigator.pop(context);
+                  serviceLocator<AppRouter>().maybePop();
                 },
               ),
             ],

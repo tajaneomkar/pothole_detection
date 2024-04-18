@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pothole_detection/modules/admin_panel/presentation/admin_panel_page.dart';
+import 'package:pothole_detection/config/router/app_router.dart';
+import 'package:pothole_detection/config/router/app_router.gr.dart';
 import 'package:pothole_detection/modules/admin_panel/presentation/bloc/admin_detail_view_bloc/admin_detail_view_bloc.dart';
 import 'package:pothole_detection/modules/admin_panel/widget/popup_dailog.dart';
-import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/services/shared_preference_service.dart';
 import 'package:pothole_detection/utils/common/app_colors.dart';
@@ -12,6 +12,7 @@ import 'package:pothole_detection/utils/common/app_input.dart';
 import 'package:pothole_detection/utils/common/custom_button.dart';
 import 'package:pothole_detection/utils/common/custom_search_dropdown.dart';
 
+@RoutePage()
 class AdminPanelDetailView extends StatefulWidget {
   const AdminPanelDetailView({
     super.key,
@@ -38,10 +39,17 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
           ),
         builder: (context, state) {
           if (state is AdminPanelDetailsLoadingState) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return Scaffold(
+              body: const Center(
+                child: CircularProgressIndicator(),
+              ),
             );
           } else if (state is AdminPanelDetailsLoadedState) {
+            BlocProvider.of<AdminDetailViewBloc>(context)
+                    .statusController
+                    .text =
+                state.getPotHoleInformationByAdminUIdResponseModel.status ?? "";
+
             String? imageUrl =
                 state.getPotHoleInformationByAdminUIdResponseModel.image ?? '';
             return Scaffold(
@@ -117,7 +125,8 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                                             iconColor: Colors.green,
                                             iconSize: 64.0,
                                             onPressed: () {
-                                              AutoRouter.of(context).pop();
+                                              serviceLocator<AppRouter>()
+                                                  .maybePop();
                                             },
                                           );
                                         }
@@ -227,20 +236,14 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                             height: 5,
                           ),
                           CustomSearchDropdown(
-                            selectedValue: 'pending',
-                            initialValue: state
-                                    .getPotHoleInformationByAdminUIdResponseModel
-                                    .status ??
-                                'pending',
+                            selectedValue:
+                                BlocProvider.of<AdminDetailViewBloc>(context)
+                                    .statusController
+                                    .text,
                             onChanged: (value) {
                               BlocProvider.of<AdminDetailViewBloc>(context)
                                   .statusController
-                                  .text = value ?? '';
-                            },
-                            onSaved: (value) {
-                              BlocProvider.of<AdminDetailViewBloc>(context)
-                                  .statusController
-                                  .text = value ?? '';
+                                  .text = value!;
                             },
                             items: const ['active', 'pending', 'completed'],
                             showSearchBox: false,
@@ -300,17 +303,11 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                                           'Client Complaint Updated Successfully'),
                                     ),
                                   );
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => const AdminPanel(),
-                                    ),
-                                  );
+                                  serviceLocator<AppRouter>()
+                                      .replace(const AdminPanelRoute());
                                 } else if (state is NavigateToLoginPageEvent) {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginPage(),
-                                    ),
-                                  );
+                                  serviceLocator<AppRouter>()
+                                      .replace(const LoginRoute());
                                 }
                               },
                               builder: (context, state) {
@@ -339,7 +336,8 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
                   ),
                 ));
           } else if (state is AdminPanelDetailsErrorState) {
-            serviceLocator<SharedPreferencesService>().clearLoginData(context);
+            serviceLocator<SharedPreferencesService>().clearLoginData();
+            serviceLocator<AppRouter>().replace(const LoginRoute());
             return Center(
               child: Text(
                 state.errorMessage,
@@ -353,7 +351,8 @@ class _AdminPanelDetailViewState extends State<AdminPanelDetailView> {
         },
         listener: (context, state) {
           if (state is AdminPanelDetailsErrorState) {
-            serviceLocator<SharedPreferencesService>().clearLoginData(context);
+            serviceLocator<SharedPreferencesService>().clearLoginData();
+            serviceLocator<AppRouter>().replace(const LoginRoute());
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(

@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pothole_detection/modules/user_panel/presentation/user_panel_page.dart';
+import 'package:pothole_detection/config/router/app_router.dart';
+import 'package:pothole_detection/config/router/app_router.gr.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_register_bloc/user_panel_register_bloc.dart';
 import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/services/shared_preference_service.dart';
@@ -10,6 +12,7 @@ import 'package:pothole_detection/utils/common/custom_button.dart';
 import 'package:pothole_detection/utils/common/date_picker_text_field_widget.dart';
 import 'package:pothole_detection/utils/common/file_picker_widget.dart';
 
+@RoutePage()
 class UserPanelRegisterComplaint extends StatefulWidget {
   const UserPanelRegisterComplaint({super.key});
 
@@ -36,25 +39,16 @@ class _UserPanelRegisterComplaintState
             iconTheme: const IconThemeData(color: appWhite),
             leading: IconButton(
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const UserPanel(),
-                    ),
-                  );
+                  serviceLocator<AppRouter>().replace(const UserPanelRoute());
                 },
                 icon: const Icon(Icons.arrow_back_ios_new_rounded)),
           ),
           body: BlocConsumer<UserPanelRegisterBloc, UserPanelRegisterState>(
             listener: (context, state) {
               if (state is UserPanelRegisterLoaded) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const UserPanel(),
-                  ),
-                );
+                serviceLocator<AppRouter>().replace(const UserPanelRoute());
               } else if (state is UserPanelRegisterError) {
-                serviceLocator<SharedPreferencesService>()
-                    .clearLoginData(context);
+                serviceLocator<SharedPreferencesService>().clearLoginData();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(

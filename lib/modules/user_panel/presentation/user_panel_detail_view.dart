@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pothole_detection/modules/user_panel/presentation/user_panel_details_bloc/user_panel_details_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:pothole_detection/services/shared_preference_service.dart';
 import 'package:pothole_detection/utils/common/app_colors.dart';
 import 'package:pothole_detection/utils/common/app_input.dart';
 
+@RoutePage()
 class UserPanelDetailView extends StatefulWidget {
   const UserPanelDetailView({
     super.key,
@@ -31,8 +33,10 @@ class _UserPanelDetailViewState extends State<UserPanelDetailView> {
       listener: (context, state) {},
       builder: (context, state) {
         if (state is UserPanelDetailsLoadingState) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return Scaffold(
+            body: const Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         } else if (state is UserPanelDetailsLoadedState) {
           return Scaffold(
@@ -131,15 +135,17 @@ class _UserPanelDetailViewState extends State<UserPanelDetailView> {
             ),
           );
         } else if (state is UserPanelDetailsErrorState) {
-          serviceLocator<SharedPreferencesService>().clearLoginData(context);
+          serviceLocator<SharedPreferencesService>().clearLoginData();
           return Center(
             child: Text(
               state.errorMessage,
             ),
           );
         } else {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return Scaffold(
+            body: const Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         }
       },

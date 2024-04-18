@@ -5,6 +5,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pothole_detection/config/router/app_router.dart';
+import 'package:pothole_detection/config/router/app_router.gr.dart';
 import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/services/shared_preference_service.dart';
@@ -13,8 +14,7 @@ import 'package:pothole_detection/utils/network/log.dart';
 
 class ApiProvider {
   void handleUnauthorizedResponse(BuildContext context) {
-    Navigator.of(context)
-        .pushReplacement(MaterialPageRoute(builder: (_) => const LoginPage()));
+    serviceLocator<AppRouter>().replace(const LoginRoute());
   }
 
   // Future<dynamic> uploadFile({
@@ -164,10 +164,10 @@ class ApiProvider {
           response.statusCode == 402 ||
           response.statusCode == 403 ||
           response.statusCode == 404) {
-        serviceLocator<AppRouter>().pushAndPopUntil(
-          const LoginRoute(),
-          predicate: (route) => route.data == null,
-        );
+        serviceLocator<SharedPreferencesService>().isLogged = false;
+        // serviceLocator<AppRouter>().replace(
+        //   const LoginRoute(),
+        // );
       } else {
         return null;
       }
@@ -209,10 +209,10 @@ class ApiProvider {
           response.statusCode == 402 ||
           response.statusCode == 403 ||
           response.statusCode == 404) {
-        serviceLocator<AppRouter>().pushAndPopUntil(
-          const LoginRoute(),
-          predicate: (route) => route.data == null,
-        );
+        serviceLocator<SharedPreferencesService>().isLogged = false;
+        // serviceLocator<AppRouter>().replace(
+        //   const LoginRoute(),
+        // );
       } else {
         return null;
       }

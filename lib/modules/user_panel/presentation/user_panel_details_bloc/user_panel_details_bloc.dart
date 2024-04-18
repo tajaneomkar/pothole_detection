@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:pothole_detection/modules/user_panel/data/model/get_pot_hole_by_uid_request_model.dart';
 import 'package:pothole_detection/modules/user_panel/data/model/get_pot_hole_by_uid_response_model.dart';
 import 'package:pothole_detection/modules/user_panel/domain/usecases/user_panel_usecases.dart';

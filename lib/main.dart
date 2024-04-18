@@ -4,13 +4,14 @@ import 'package:pothole_detection/services/service_locator.dart';
 import 'package:pothole_detection/services/shared_preference_service.dart';
 
 void main() async {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
   initializeDependencies();
   await serviceLocator<SharedPreferencesService>().initialise();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final _appRouter = AppRouter();
+  final _appRouter = serviceLocator<AppRouter>();
   MyApp({super.key});
 
   @override

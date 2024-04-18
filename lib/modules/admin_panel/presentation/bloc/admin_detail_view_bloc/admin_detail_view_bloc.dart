@@ -37,6 +37,7 @@ class AdminDetailViewBloc
               response.right);
 
           if (data != null) {
+            statusController.text = data.status ?? "";
             emit(AdminPanelDetailsLoadedState(
               getPotHoleInformationByAdminUIdResponseModel: data,
             ));

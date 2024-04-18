@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:pothole_detection/config/router/app_router.dart';
-import 'package:pothole_detection/modules/login/presentation/login_page.dart';
+import 'package:pothole_detection/config/router/app_router.gr.dart';
+import 'package:pothole_detection/services/service_locator.dart';
+import 'package:pothole_detection/services/shared_preference_service.dart';
 
 @RoutePage()
 class SplashScreen extends StatefulWidget {
@@ -14,14 +16,20 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
+  final sharedPreferenceService = serviceLocator<SharedPreferencesService>();
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () {
-      context.router.push(const LoginRoute());
-      // Navigator.of(context).pushReplacement(
-      //   MaterialPageRoute(builder: (context) => const LoginPage()),
-      // );
+    Future.delayed(const Duration(seconds: 2), () {
+      if (sharedPreferenceService.isLogged == false) {
+        serviceLocator<AppRouter>().replace(const LoginRoute());
+      } else if (sharedPreferenceService.isLogged == true &&
+          sharedPreferenceService.userRole == "user") {
+        serviceLocator<AppRouter>().replace(const UserPanelRoute());
+      } else if (sharedPreferenceService.isLogged == true &&
+          sharedPreferenceService.userRole == "admin") {
+        serviceLocator<AppRouter>().replace(const AdminPanelRoute());
+      }
     });
   }
 

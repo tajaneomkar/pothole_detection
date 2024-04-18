@@ -32,7 +32,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       headers["Content-Type"] = "application/json";
 
       final response = await http.post(
-        Uri.parse("https://potholedetection.onrender.com/api/user/userLogin"),
+        Uri.parse(
+            "https://soham0708-pothole-detect.hf.space/api/user/userLogin"),
         headers: headers,
         body: json.encode(body.toJson()),
       );
@@ -49,6 +50,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             userData["email"];
         serviceLocator<SharedPreferencesService>().userName =
             userData["username"];
+        serviceLocator<SharedPreferencesService>().isLogged = true;
 
         final LoginResponseModel loginResponse =
             LoginResponseModel.fromJson(responseData);

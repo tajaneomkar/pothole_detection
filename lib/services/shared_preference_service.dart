@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:pothole_detection/modules/login/presentation/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
   late SharedPreferences _preferences;
+
+  SharedPreferencesService() {
+    initialise();
+  }
 
   Future initialise() async {
     _preferences = await SharedPreferences.getInstance();
@@ -14,6 +16,7 @@ class SharedPreferencesService {
   static const String USER_ROLE = 'role';
   static const String USER_NAME = 'username';
   static const String USER_EMAIL = 'email';
+  static const String IsLogged = "isLogged";
 
   void _saveToDisk<T>(String key, T content) {
     if (content is String) {
@@ -38,17 +41,13 @@ class SharedPreferencesService {
     return value;
   }
 
-  Future<void> clearLoginData(BuildContext context) async {
+  Future<void> clearLoginData() async {
     await _preferences.remove(AUTH_TOKEN);
     await _preferences.remove(USER_EMAIL);
     await _preferences.remove(USER_ROLE);
     await _preferences.remove(USER_NAME);
     await _preferences.remove(USER_ID);
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const LoginPage(),
-      ),
-    );
+    await _preferences.remove(IsLogged);
   }
 
   Future<void> clearNotificationData() async {}
@@ -67,4 +66,7 @@ class SharedPreferencesService {
 
   String get userEmail => _getFromDisk(USER_EMAIL) ?? "";
   set userEmail(String value) => _saveToDisk(USER_EMAIL, value);
+
+  bool get isLogged => _getFromDisk(IsLogged) ?? false;
+  set isLogged(bool value) => _saveToDisk(IsLogged, value);
 }

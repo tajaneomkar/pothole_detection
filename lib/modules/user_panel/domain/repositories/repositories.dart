@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:either_dart/either.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:pothole_detection/modules/user_panel/data/model/get_pot_hole_by_uid_request_model.dart';
 import 'package:pothole_detection/modules/user_panel/data/model/register_user_request_model.dart';
 import 'package:pothole_detection/modules/user_panel/data/model/user_panel_request_model.dart';
